@@ -68,3 +68,16 @@ def adjust_alpha_for_stability(alpha, nspace):
     print("Warning: Could not stabilize FTCS.")
     return alpha
 
+
+def sch_plot(psi, x, t, plot_type='psi', time_index=0):
+    plt.figure(figsize=(8, 5))
+    if plot_type == 'psi':
+        plt.plot(x, np.real(psi[time_index, :]), label='Real(ψ)', lw=2)
+    elif plot_type == 'prob':
+        plt.plot(x, np.abs(psi[time_index, :])**2, label='|ψ|²', lw=2)
+    plt.title(f"{plot_type.capitalize()} at t={t[time_index]:.2f}")
+    plt.xlabel("x")
+    plt.ylabel("Amplitude" if plot_type == 'psi' else "Probability")
+    plt.legend()
+    plt.show()
+
