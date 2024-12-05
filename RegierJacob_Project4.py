@@ -25,6 +25,15 @@ def sch_eqn(nspace, ntime, tau, method='ftcs', length=200, potential=[], wparam=
             psi[n + 1, 0] = psi[n + 1, -2] 
             psi[n + 1, -1] = psi[n + 1, 1] 
 
+    elif method == 'crank':
+        alpha = 1j * tau / (2 * dx**2)
+        beta = 1j * tau / 2
+        A = create_tridiagonal_matrix(nspace, -alpha, 1 + 2 * alpha + beta * V, -alpha)
+        B = create_tridiagonal_matrix(nspace, alpha, 1 - 2 * alpha - beta * V, alpha)
+        for n in range(ntime - 1):
+            rhs = B @ psi[n, :]
+            psi[n + 1, :] = solve(A, rhs)
+
     return psi, x, t, V
 
 
