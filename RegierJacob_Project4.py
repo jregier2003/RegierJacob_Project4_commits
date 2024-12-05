@@ -81,3 +81,23 @@ def sch_plot(psi, x, t, plot_type='psi', time_index=0):
     plt.legend()
     plt.show()
 
+
+def test_schrodinger():
+    test_params = [
+        {"tau": 0.0025, "nspace": 150},
+        {"tau": 0.002, "nspace": 200},
+        {"tau": 0.0015, "nspace": 250},
+    ]
+    for params in test_params:
+        print(f"\nTesting with tau={params['tau']}, nspace={params['nspace']}:")
+        try:
+            psi_ftcs, x, t, prob_ftcs = sch_eqn(nspace=params['nspace'], ntime=500, tau=params['tau'], method='ftcs')
+            print("FTCS Total Probability (Last Step):", prob_ftcs[-1])
+            sch_plot(psi_ftcs, x, t, plot_type='prob', time_index=250)
+        except ValueError as e:
+            print("FTCS Test Failed:", e)
+    psi_crank, x, t, prob_crank = sch_eqn(nspace=100, ntime=500, tau=0.01, method='crank')
+    print("\nCrank-Nicholson Total Probability (Last Step):", prob_crank[-1])
+    sch_plot(psi_crank, x, t, plot_type='prob', time_index=250)
+
+test_schrodinger()
