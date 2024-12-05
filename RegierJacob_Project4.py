@@ -10,13 +10,23 @@ def sch_eqn(nspace, ntime, tau, method='ftcs', length=200, potential=[], wparam=
     sigma0, x0, k0 = wparam
     psi = np.zeros((ntime, nspace), dtype=complex)
     psi[0, :] = np.exp(-(x - x0)**2 / (2 * sigma0**2)) * np.exp(1j * k0 * x)
-    psi[0, :] /= np.sqrt(np.sum(np.abs(psi[0, :])**2) * dx)  # Normalize
+    psi[0, :] /= np.sqrt(np.sum(np.abs(psi[0, :])**2) * dx)  
 
     V = np.zeros(nspace)
     for idx in potential:
         if 0 <= idx < nspace:
             V[idx] = 1
+
+    if method == 'ftcs':
+        alpha = tau / dx**2
+        for n in range(ntime - 1):
+            for i in range(1, nspace - 1):
+                psi[n + 1, i] = psi[n, i] - 1j * alpha * (psi[n, i + 1] - 2 * psi[n, i] + psi[n, i - 1]) + 1j * tau * V[i] * psi[n, i]
+            psi[n + 1, 0] = psi[n + 1, -2] 
+            psi[n + 1, -1] = psi[n + 1, 1] 
+
     return psi, x, t, V
+
 
 
 
