@@ -19,6 +19,7 @@ def sch_eqn(nspace, ntime, tau, method='ftcs', length=200, potential=[], wparam=
 
     if method == 'ftcs':
         alpha = tau / dx**2
+        alpha = adjust_alpha_for_stability(alpha, nspace)
         for n in range(ntime - 1):
             for i in range(1, nspace - 1):
                 psi[n + 1, i] = psi[n, i] - 1j * alpha * (psi[n, i + 1] - 2 * psi[n, i] + psi[n, i - 1]) + 1j * tau * V[i] * psi[n, i]
@@ -34,7 +35,11 @@ def sch_eqn(nspace, ntime, tau, method='ftcs', length=200, potential=[], wparam=
             rhs = B @ psi[n, :]
             psi[n + 1, :] = solve(A, rhs)
 
-    return psi, x, t, V
+    prob = np.zeros(ntime)
+    for n in range(ntime):
+        prob[n] = np.sum(np.abs(psi[n, :])**2) * dx
+
+    return psi, x, t, prob
 
 
 def create_tridiagonal_matrix(size, below_diag, diag, above_diag):
