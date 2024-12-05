@@ -28,6 +28,12 @@ def sch_eqn(nspace, ntime, tau, method='ftcs', length=200, potential=[], wparam=
     return psi, x, t, V
 
 
+def create_tridiagonal_matrix(size, below_diag, diag, above_diag):
+    matrix = np.zeros((size, size), dtype=complex)
+    np.fill_diagonal(matrix, diag)
+    np.fill_diagonal(matrix[1:], below_diag)
+    np.fill_diagonal(matrix[:, 1:], above_diag)
+    return matrix
 
 
 
