@@ -41,4 +41,16 @@ def compute_spectral_radius(matrix):
     return np.max(np.abs(eigenvalues))
 
 
+def adjust_alpha_for_stability(alpha, nspace):
+    max_attempts = 100
+    adjustment_factor = 0.9
+    for _ in range(max_attempts):
+        evolution_matrix = create_tridiagonal_matrix(nspace, -alpha, 1 + 2 * alpha, -alpha)
+        radius = compute_spectral_radius(evolution_matrix)
+        if radius <= 1:
+            print(f"Adjusted alpha to: {alpha} (Spectral Radius: {radius})")
+            return alpha
+        alpha *= adjustment_factor
+    print("Warning: Could not stabilize FTCS.")
+    return alpha
 
